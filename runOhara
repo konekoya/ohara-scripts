@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const cp = require("child_process");
+const chalk = require("chalk");
+require("dotenv").config();
+
+const containerName = process.env.CONFIGURATOR_NAME;
+const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
+const userName = process.env.USER_NAME;
+const masterIp = process.env.K8S_MASTER;
+const slaveIp = process.env.K8S_SLAVE;
+
+console.log(
+  chalk.blue(`📃Start a configurator named ${containerName} on ${masterIp}`)
+);
+console.log();
+
+try {
+  cp.execSync(
+    `ssh ${userName}@${masterIp} docker run -d --name ${containerName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`,
+    { stdio: "inherit" }
+  );
+
+  console.log(
+    chalk.green(
+      `👍 Successfully created the configurator: ${chalk.bold(containerName)}`
+    )
+  );
+} catch (error) {
+  console.log(chalk.red(`Oops, we cannot start a new configurator`));
+}

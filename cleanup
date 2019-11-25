@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const cp = require("child_process");
+const chalk = require("chalk");
+require("dotenv").config();
+
+const containerName = process.env.CONFIGURATOR_NAME;
+const userName = process.env.USER_NAME;
+const masterIp = process.env.K8S_MASTER;
+const slaveIp = process.env.K8S_SLAVE;
+
+console.log(
+  chalk.blue(`📃 Clean up docker containers on ${masterIp} and ${slaveIp}`)
+);
+
+try {
+  console.log(chalk.blue(`First up, delete all pods on ${masterIp}`));
+
+  cp.execSync(
+    `ssh ${userName}@${masterIp} kubectl delete pods --all --grace-period=0 --force`
+  );
+
+  cp.execSync(`ssh ${userName}@${masterIp} kubectl get pods`);
+} catch (error) {
+  console.log(error);
+  console.log(chalk.red(`Oops, failed to delete pods...`));
+}
+
+console.log(chalk.blue(`Next up, let's delete Configurator on ${masterIp}`));
+
+try {
+  const hasContainer = cp
+    .execSync(
+      `ssh ${userName}@${masterIp} docker ps --filter "name=${containerName}" -q`
+    )
+    .toString();
+
+  if (hasContainer) {
+    cp.execSync(`ssh ${userName}@${masterIp} docker rm -f ${containerName}`);
+    console.log(
+      chalk.green(
+        `👍 Successfully deleted container: ${chalk.bold(containerName)}`
+      )
+    );
+    return;
+  }
+
+  console.log(
+    chalk.yellow(
+      `Could not found a container named ${chalk.bold(containerName)}`
+    )
+  );
+} catch (error) {
+  // ignore the error here since docker command already provided enough info for debugging
+  console.log(error.message);
+  console.log(
+    chalk.red(`Ooops, failed to remove container ${chalk.bold(containerName)}`)
+  );
+}
