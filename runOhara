@@ -2,7 +2,8 @@
 
 const cp = require("child_process");
 const chalk = require("chalk");
-require("dotenv").config();
+const config = require("./config");
+require("dotenv").config({ path: config.envPath });
 
 const containerName = process.env.CONFIGURATOR_NAME;
 const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;

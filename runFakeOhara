@@ -2,7 +2,8 @@
 
 const cp = require("child_process");
 const chalk = require("chalk");
-require("dotenv").config();
+const config = require("./config");
+require("dotenv").config({ path: config.envPath });
 
 const containerName = process.env.CONFIGURATOR_NAME;
 const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
@@ -30,5 +31,5 @@ try {
     )
   );
 } catch (error) {
-  console.log(chalk.red(`Oops, we cannot start a new configurator`));
+  console.log(chalk.red(`Oops, we cannot start a new configurator, this often cuases by not doing a clean up before doing this.`));
 }
