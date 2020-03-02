@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+const cp = require("child_process");
+const chalk = require("chalk");
+
+console.log(chalk.blue(`📃 Good morning Joshua! Let's prepare your day :)`));
+
+cp.execSync("cleanup", { stdio: "inherit" });
+cp.execSync("updateImages", { stdio: "inherit" });
+cp.execSync("updateBranch", { stdio: "inherit" });
+cp.execSync("runOhara", { stdio: "inherit" });

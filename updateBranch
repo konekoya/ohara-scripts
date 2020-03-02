@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+const config = require("./config");
+const chalk = require("chalk");
+const cp = require("child_process");
+require("dotenv").config({ path: config.envPath });
+
+const oharaPath = process.env.OHARA_HOME;
+
+console.log(oharaPath);
+console.log(chalk.blue(`📃 Updating local ohara branch at ${oharaPath}`));
+
+try {
+  process.chdir(oharaPath);
+
+  const isMaster =
+    cp
+      .execSync("git rev-parse --abbrev-ref HEAD")
+      .toString()
+      .trim() === "master";
+
+  if (isMaster) {
+    return cp.execSync(`git pull`, { stdio: "inherit" });
+  }
+
+  // Not on master
+  try {
+    cp.execSync("git stash -u", { stdio: "inherit" });
+    cp.execSync("git checkout master", { stdio: "inherit" });
+    cp.execSync("git pull", { stdio: "inherit" });
+    cp.execSync("git checkout -");
+    cp.execSync("git stash apply");
+  } catch (error) {
+    console.log(chalk.red("Oops, failed to update feature branch"));
+  }
+} catch (error) {
+  console.log(chalk.red("Oops, cannot update the branch"));
+}

@@ -16,6 +16,7 @@ console.log();
 cp.execSync(`ssh ${userName}@${masterIp} docker system prune -f`, {
   stdio: "inherit"
 });
+
 cp.execSync(`ssh ${userName}@${slaveIp} docker system prune -f`, {
   stdio: "inherit"
 });
@@ -24,7 +25,7 @@ cp.execSync(`ssh ${userName}@${masterIp} docker pull ${configuratorImage}`, {
   stdio: "inherit"
 });
 
-const services = ["zookeeper", "broker", "connect-worker", "streamapp"];
+const services = ["zookeeper", "broker", "connect-worker", "stream"];
 
 services.forEach(service => {
   cp.execSync(
