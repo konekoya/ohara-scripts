@@ -6,29 +6,50 @@ require("dotenv").config({ path: config.envPath });
 
 const oharaPath = process.env.OHARA_HOME;
 
-console.log(oharaPath);
 console.log(chalk.blue(`📃 Updating local ohara branch at ${oharaPath}`));
 
 try {
   process.chdir(oharaPath);
 
-  const isMaster =
-    cp
-      .execSync("git rev-parse --abbrev-ref HEAD")
-      .toString()
-      .trim() === "master";
+  const currentBranchName = cp
+    .execSync("git rev-parse --abbrev-ref HEAD")
+    .toString()
+    .trim();
 
-  if (isMaster) {
+  if (currentBranchName === "master") {
     return cp.execSync(`git pull`, { stdio: "inherit" });
   }
 
   // Not on master
   try {
-    cp.execSync("git stash -u", { stdio: "inherit" });
+    // If a working tree is dirty, we will stash the changes and do the rebase
+    // then stash apply them back.
+    const hasUncommittedFiles = cp
+      .execSync("git status -s")
+      .toString()
+      .trim();
+
+    if (hasUncommittedFiles) {
+      console.log(
+        chalk.blue(`The working tree is dirty, stashing the changes`)
+      );
+      cp.execSync("git stash -u", { stdio: "inherit" });
+    }
+
     cp.execSync("git checkout master", { stdio: "inherit" });
     cp.execSync("git pull", { stdio: "inherit" });
     cp.execSync("git checkout -");
-    cp.execSync("git stash apply");
+    console.log(chalk.green(`Rebasing feature branch of ${currentBranchName}`));
+    cp.execSync("git rebase master", { stdio: "inherit" });
+
+    if (hasUncommittedFiles) {
+      console.log(
+        chalk.blue(
+          `Applying the changes that were temporarily in the previous steps`
+        )
+      );
+      cp.execSync("git stash apply", { stdio: "inherit" });
+    }
   } catch (error) {
     console.log(chalk.red("Oops, failed to update feature branch"));
   }

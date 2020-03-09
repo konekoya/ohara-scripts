@@ -7,4 +7,9 @@ console.log(chalk.blue(`📃 Good morning Joshua! Let's prepare your day :)`));
 cp.execSync("cleanup", { stdio: "inherit" });
 cp.execSync("updateImages", { stdio: "inherit" });
 cp.execSync("updateBranch", { stdio: "inherit" });
+cp.execSync("updateJars", { stdio: "inherit" });
 cp.execSync("runOhara", { stdio: "inherit" });
+
+console.log(
+  chalk.green("Finish the script without error. You are ready to go :)")
+);

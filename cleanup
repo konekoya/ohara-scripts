@@ -46,15 +46,24 @@ try {
     return;
   }
 
+  console.log();
   console.log(
     chalk.yellow(
       `Could not found a container named ${chalk.bold(containerName)}`
     )
   );
+
+  console.log(
+    chalk.blue(
+      "Here are some more info of the currently running configurator container:"
+    )
+  );
+  cp.execSync(`ssh ${userName}@${masterIp} docker ps -a | grep configurator`, {
+    stdio: "inherit"
+  });
 } catch (error) {
-  // ignore the error here since docker command already provided enough info for debugging
   console.log(error.message);
   console.log(
-    chalk.red(`Ooops, failed to remove container ${chalk.bold(containerName)}`)
+    chalk.red(`Oops, failed to remove container ${chalk.bold(containerName)}`)
   );
 }
