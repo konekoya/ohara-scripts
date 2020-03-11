@@ -16,6 +16,10 @@ try {
     .toString()
     .trim();
 
+  console.log(
+    chalk.blue(`Your local ohara branch is pointing to ${currentBranchName}`)
+  );
+
   if (currentBranchName === "master") {
     return cp.execSync(`git pull`, { stdio: "inherit" });
   }

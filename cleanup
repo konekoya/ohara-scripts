@@ -15,13 +15,16 @@ console.log(
 );
 
 try {
-  console.log(chalk.blue(`First up, delete all pods on ${masterIp}`));
+  console.log(chalk.blue(`First up, delete all pods on ${slaveIp}`));
 
   cp.execSync(
-    `ssh ${userName}@${masterIp} kubectl delete pods --all --grace-period=0 --force`
+    `ssh ${userName}@${masterIp} kubectl delete pods --all --grace-period=0 --force`,
+    { stdio: "inherit" }
   );
 
-  cp.execSync(`ssh ${userName}@${masterIp} kubectl get pods`);
+  cp.execSync(`ssh ${userName}@${masterIp} kubectl get pods`, {
+    stdio: "inherit"
+  });
 } catch (error) {
   console.log(error);
   console.log(chalk.red(`Oops, failed to delete pods...`));
@@ -37,7 +40,9 @@ try {
     .toString();
 
   if (hasContainer) {
-    cp.execSync(`ssh ${userName}@${masterIp} docker rm -f ${containerName}`);
+    cp.execSync(`ssh ${userName}@${masterIp} docker rm -f ${containerName}`, {
+      stdio: "inherit"
+    });
     console.log(
       chalk.green(
         `👍 Successfully deleted container: ${chalk.bold(containerName)}`

@@ -3,33 +3,23 @@
 const cp = require("child_process");
 const chalk = require("chalk");
 const config = require("./config");
+const { runSsh } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
 const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
-const userName = process.env.USER_NAME;
-const masterIp = process.env.K8S_MASTER;
-const slaveIp = process.env.K8S_SLAVE;
 
 console.log(chalk.blue(`📃 Updating images`));
 console.log();
 
-cp.execSync(`ssh ${userName}@${masterIp} docker system prune -f`, {
-  stdio: "inherit"
-});
-
-cp.execSync(`ssh ${userName}@${slaveIp} docker system prune -f`, {
-  stdio: "inherit"
-});
-
-cp.execSync(`ssh ${userName}@${masterIp} docker pull ${configuratorImage}`, {
-  stdio: "inherit"
-});
+runSsh({ command: `docker system prune -f` });
+runSsh({ command: `docker system prune -f`, isSlave: true });
+runSsh({ command: `docker pull ${configuratorImage}` });
 
 const services = ["zookeeper", "broker", "connect-worker", "stream"];
 
 services.forEach(service => {
-  cp.execSync(
-    `ssh ${userName}@${slaveIp} docker pull oharastream/${service}:0.9.0-SNAPSHOT`,
-    { stdio: "inherit" }
-  );
+  runSsh({
+    command: `docker pull oharastream/${service}:0.9.0-SNAPSHOT`,
+    isSlave: true
+  });
 });
