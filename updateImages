@@ -3,7 +3,7 @@
 const cp = require("child_process");
 const chalk = require("chalk");
 const config = require("./config");
-const { runSsh } = require("./utils");
+const { run } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
 const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
@@ -11,15 +11,15 @@ const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
 console.log(chalk.blue(`📃 Updating images`));
 console.log();
 
-runSsh({ command: `docker system prune -f` });
-runSsh({ command: `docker system prune -f`, isSlave: true });
-runSsh({ command: `docker pull ${configuratorImage}` });
+const runMaster = run();
+const runSlave = run({ isMaster: false });
+
+runMaster("docker system prune -f");
+runSlave("docker system prune -f");
+runMaster(`docker pull ${configuratorImage}`);
 
 const services = ["zookeeper", "broker", "connect-worker", "stream"];
 
 services.forEach(service => {
-  runSsh({
-    command: `docker pull oharastream/${service}:0.9.0-SNAPSHOT`,
-    isSlave: true
-  });
+  runSlave(`docker pull oharastream/${service}:0.9.0-SNAPSHOT`);
 });

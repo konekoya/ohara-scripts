@@ -3,12 +3,15 @@
 const cp = require("child_process");
 const chalk = require("chalk");
 const config = require("./config");
+const { run } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
 const containerName = process.env.CONFIGURATOR_NAME;
 const userName = process.env.USER_NAME;
 const masterIp = process.env.K8S_MASTER;
 const slaveIp = process.env.K8S_SLAVE;
+const runMaster = run();
+const runSlave = run({ isMaster: false });
 
 console.log(
   chalk.blue(`📃 Clean up docker containers on ${masterIp} and ${slaveIp}`)
@@ -16,15 +19,10 @@ console.log(
 
 try {
   console.log(chalk.blue(`First up, delete all pods on ${slaveIp}`));
+  runMaster(`kubectl delete pods --all --grace-period=0 --force`);
 
-  cp.execSync(
-    `ssh ${userName}@${masterIp} kubectl delete pods --all --grace-period=0 --force`,
-    { stdio: "inherit" }
-  );
-
-  cp.execSync(`ssh ${userName}@${masterIp} kubectl get pods`, {
-    stdio: "inherit"
-  });
+  runMaster(`kubectl get pods`);
+  runSlave("docker ps -a");
 } catch (error) {
   console.log(error);
   console.log(chalk.red(`Oops, failed to delete pods...`));
@@ -40,9 +38,8 @@ try {
     .toString();
 
   if (hasContainer) {
-    cp.execSync(`ssh ${userName}@${masterIp} docker rm -f ${containerName}`, {
-      stdio: "inherit"
-    });
+    runMaster(`docker rm -f ${containerName}`);
+
     console.log(
       chalk.green(
         `👍 Successfully deleted container: ${chalk.bold(containerName)}`
@@ -54,7 +51,7 @@ try {
   console.log();
   console.log(
     chalk.yellow(
-      `Could not found a container named ${chalk.bold(containerName)}`
+      `Could not find a container named ${chalk.bold(containerName)}`
     )
   );
 
@@ -63,11 +60,9 @@ try {
       "Here are some more info of the currently running configurator container:"
     )
   );
-  cp.execSync(`ssh ${userName}@${masterIp} docker ps -a | grep configurator`, {
-    stdio: "inherit"
-  });
+  runMaster("docker ps -a");
 } catch (error) {
-  console.log(error.message);
+  console.log(error);
   console.log(
     chalk.red(`Oops, failed to remove container ${chalk.bold(containerName)}`)
   );

@@ -8,16 +8,15 @@ const slaveIp = process.env.K8S_SLAVE;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const runSsh = options => {
-  const { isSlave = false, command = "" } = options;
-  const serverIp = isSlave ? slaveIp : masterIp;
+const run = (options = {}) => command => {
+  const { isMaster = true, shouldPrint = true } = options;
+  const serverIp = isMaster ? masterIp : slaveIp;
+  const stdio = shouldPrint ? { stdio: "inherit" } : {};
 
-  cp.execSync(`ssh ${userName}@${masterIp} ${command}`, {
-    stdio: "inherit"
-  });
+  cp.execSync(`ssh ${userName}@${serverIp} ${command}`, stdio);
 };
 
 module.exports = {
   sleep,
-  runSsh
+  run
 };

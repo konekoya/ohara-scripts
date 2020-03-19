@@ -3,7 +3,7 @@
 const cp = require("child_process");
 const chalk = require("chalk");
 const config = require("./config");
-const { sleep } = require("./utils.js");
+const { run } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
 const containerName = process.env.CONFIGURATOR_NAME;
@@ -33,34 +33,34 @@ function parseArgs() {
   // For now, users can only pass a single option
   if (option.length > 1) {
     throw new Error(
-      `You can only pass one CLI option to this program! Instead, receiving ${option}`
+      `You can only pass a single CLI option to this program! Instead, receiving: ${option}`
     );
   }
 
-  if (!option[0].startsWith("--")) {
-    throw new Error(`Unrecognized CLI option of ${option}`);
+  const [mode] = option;
+  const validModes = Object.values(MODES);
+
+  if (validModes.includes(mode.toUpperCase())) {
+    return mode;
   }
 
-  return option[0].split("=")[1];
-}
-
-function run(options) {
-  cp.execSync(`ssh ${userName}@${masterIp} ${options}`, { stdio: "inherit" });
+  throw new Error(`Unrecognized CLI option of ${mode}`);
 }
 
 try {
   const currentMode = parseArgs().toUpperCase();
+  const runMaster = run();
 
   if (currentMode == MODES.K8S) {
-    run(
+    runMaster(
       `docker run -d --name ${containerName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`
     );
   } else if (currentMode == MODES.DOCKER) {
-    run(
+    runMaster(
       `docker run -d --name ${containerName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} ${configuratorImage} --port 12345 --hostname ${masterIp}`
     );
   } else {
-    run(
+    runMaster(
       `docker run -d --name ${containerName} --rm -p 12345:12345 ${configuratorImage} --port 12345 --fake true`
     );
   }
@@ -73,6 +73,5 @@ try {
     )
   );
 } catch (error) {
-  console.log(error);
-  console.log(chalk.red(`Oops, we cannot start a new configurator`));
+  console.log(chalk.red(error.message));
 }
