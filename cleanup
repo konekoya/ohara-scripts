@@ -6,7 +6,7 @@ const config = require("./config");
 const { run } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
-const containerName = process.env.CONFIGURATOR_NAME;
+const configuratorName = process.env.CONFIGURATOR_NAME;
 const userName = process.env.USER_NAME;
 const masterIp = process.env.K8S_MASTER;
 const slaveIp = process.env.K8S_SLAVE;
@@ -33,16 +33,16 @@ console.log(chalk.blue(`Next up, let's delete Configurator on ${masterIp}`));
 try {
   const hasContainer = cp
     .execSync(
-      `ssh ${userName}@${masterIp} docker ps --filter "name=${containerName}" -q`
+      `ssh ${userName}@${masterIp} docker ps --filter "name=${configuratorName}" -q`
     )
     .toString();
 
   if (hasContainer) {
-    runMaster(`docker rm -f ${containerName}`);
+    runMaster(`docker rm -f ${configuratorName}`);
 
     console.log(
       chalk.green(
-        `👍 Successfully deleted container: ${chalk.bold(containerName)}`
+        `👍 Successfully deleted container: ${chalk.bold(configuratorName)}`
       )
     );
     return;
@@ -51,7 +51,7 @@ try {
   console.log();
   console.log(
     chalk.yellow(
-      `Could not find a container named ${chalk.bold(containerName)}`
+      `Could not find a container named ${chalk.bold(configuratorName)}`
     )
   );
 
@@ -64,6 +64,8 @@ try {
 } catch (error) {
   console.log(error);
   console.log(
-    chalk.red(`Oops, failed to remove container ${chalk.bold(containerName)}`)
+    chalk.red(
+      `Oops, failed to remove container ${chalk.bold(configuratorName)}`
+    )
   );
 }

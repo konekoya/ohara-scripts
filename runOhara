@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
-const cp = require("child_process");
 const chalk = require("chalk");
 const config = require("./config");
 const { run } = require("./utils");
 require("dotenv").config({ path: config.envPath });
 
-const containerName = process.env.CONFIGURATOR_NAME;
-const configuratorImage = process.env.CONFIGURATOR_IMAGE_NAME;
-const userName = process.env.USER_NAME;
+const configuratorName = process.env.CONFIGURATOR_NAME;
+const imageVersion = process.env.IMAGE_VERSION;
 const masterIp = process.env.K8S_MASTER;
 const slaveIp = process.env.K8S_SLAVE;
+const configuratorImage = `oharastream/configurator:${imageVersion}`;
 
 const MODES = {
   FAKE: "FAKE",
@@ -19,7 +18,7 @@ const MODES = {
 };
 
 console.log(
-  chalk.blue(`📃Start a configurator named ${containerName} on ${masterIp}`)
+  chalk.blue(`📃Start a configurator named ${configuratorName} on ${masterIp}`)
 );
 console.log();
 
@@ -53,22 +52,22 @@ try {
 
   if (currentMode == MODES.K8S) {
     runMaster(
-      `docker run -d --name ${containerName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`
     );
   } else if (currentMode == MODES.DOCKER) {
     runMaster(
-      `docker run -d --name ${containerName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} ${configuratorImage} --port 12345 --hostname ${masterIp}`
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} ${configuratorImage} --port 12345 --hostname ${masterIp}`
     );
   } else {
     runMaster(
-      `docker run -d --name ${containerName} --rm -p 12345:12345 ${configuratorImage} --port 12345 --fake true`
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 ${configuratorImage} --port 12345 --fake true`
     );
   }
 
   console.log(
     chalk.green(
       `👍 Successfully created the configurator: ${chalk.bold(
-        containerName
+        configuratorName
       )} in ${currentMode} mode`
     )
   );
