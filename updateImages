@@ -11,7 +11,8 @@ const images = [
   `oharastream/zookeeper:${imageVersion}`,
   `oharastream/broker:${imageVersion}`,
   `oharastream/connect-worker:${imageVersion}`,
-  `oharastream/stream:${imageVersion}`
+  `oharastream/stream:${imageVersion}`,
+  `oharastream/shabondi:${imageVersion}`,
 ];
 
 console.log(chalk.blue(`📃 Updating images`));
@@ -20,8 +21,8 @@ console.log();
 const runMaster = run();
 const runSlave = run({ isMaster: false });
 
-runMaster("docker system prune -f");
-runSlave("docker system prune -f");
+runMaster("docker system prune -a -f");
+runSlave("docker system prune -a -f");
 runMaster(`docker pull ${configuratorImage}`);
 
-images.forEach(image => runSlave(`docker pull ${image}`));
+images.forEach((image) => runSlave(`docker pull ${image}`));
