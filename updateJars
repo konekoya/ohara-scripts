@@ -17,15 +17,21 @@ console.log(chalk.blue(`📃 Updating testing jars ${OHARA_PATH}`));
 try {
   process.chdir(OHARA_PATH);
 
+  console.log(chalk.blue(`Removing old files from ${path.join(DEST_DIR)}`));
+  const oldFiles = fs.readdirSync(DEST_DIR);
+  oldFiles.forEach((file) => fs.unlinkSync(path.join(DEST_DIR, file)));
+
+  cp.execSync(`ls -l ${DEST_DIR}`, { stdio: "inherit" });
+
   console.log(chalk.blue("Rebuilding ohara it jars..."));
   cp.execSync(`./gradlew clean :ohara-it:jar -PskipManager`, {
-    stdio: "inherit"
+    stdio: "inherit",
   });
 
   console.log(chalk.blue(`Moving file from ${SOURCE_DIR} to ${DEST_DIR}`));
 
   const files = fs.readdirSync(FILE_PATH);
-  files.forEach(file => {
+  files.forEach((file) => {
     fs.copyFileSync(path.join(SOURCE_DIR, file), path.join(DEST_DIR, file));
   });
 
