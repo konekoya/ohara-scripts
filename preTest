@@ -1,0 +1,106 @@
+#!/usr/bin/env node
+
+const chalk = require("chalk");
+const axios = require("axios");
+const config = require("./config");
+const { capitalize } = require("lodash/fp");
+const { run, getMode } = require("./utils");
+require("dotenv").config({ path: config.envPath });
+
+const configuratorName = process.env.CONFIGURATOR_NAME;
+const imageVersion = process.env.IMAGE_VERSION;
+const masterIp = process.env.K8S_MASTER;
+const API_ROOT = process.env.API_ROOT;
+const configuratorImage = `oharastream/configurator:${imageVersion}`;
+
+const MODES = {
+  FAKE: "FAKE",
+  K8S: "K8S",
+  DOCKER: "DOCKER",
+};
+
+console.log(chalk.blue(`📃Creating a workspace named workspace1`));
+console.log();
+
+(async () => {
+  const mode = await getMode();
+
+  console.log(
+    chalk.blue(`You're currently using ${capitalize(mode)} Configurator`)
+  );
+
+  // Create Node
+  const nodeName = "joshua-dev-01";
+
+  createServices(nodeName);
+
+  // Passing config
+
+  // Starting
+
+  // Create workspace
+})();
+
+async function createServices(nodeName) {
+  try {
+    await axios.post(`${API_ROOT}/nodes`, {
+      hostname: nodeName,
+      port: 22,
+      user: "Joshua",
+      password: "password",
+    });
+
+    // Create zookeeper, broker, worker
+    await axios.post(`${API_ROOT}/zookeepers`, {
+      group: "zookeeper",
+      name: "workspace1",
+      nodeNames: [nodeName],
+    });
+
+    await axios.post(`${API_ROOT}/brokers`, {
+      group: "broker",
+      name: "workspace1",
+      zookeeperClusterKey: {
+        group: "zookeeper",
+        name: "workspace1",
+      },
+      nodeNames: [nodeName],
+    });
+
+    await axios.post(`${API_ROOT}/workers`, {
+      group: "worker",
+      name: "workspace1",
+      brokerClusterKey: {
+        group: "broker",
+        name: "workspace1",
+      },
+      nodeNames: [nodeName],
+    });
+
+    axios.post(`${API_ROOT}/objects`, {
+      nodeNames: [nodeName],
+      name: "workspace1",
+      group: "workspace",
+      worker: {
+        name: "workspace1",
+        nodeNames: ["joshua-dev-01"],
+        group: "worker",
+        brokerClusterKey: { group: "broker", name: "workspace1" },
+        freePorts: [15678, 22016, 49148, 25560, 49866],
+      },
+      broker: {
+        name: "workspace1",
+        nodeNames: ["joshua-dev-01"],
+        group: "broker",
+        zookeeperClusterKey: { group: "zookeeper", name: "workspace1" },
+      },
+      zookeeper: {
+        name: "workspace1",
+        nodeNames: ["joshua-dev-01"],
+        group: "zookeeper",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
