@@ -1,7 +1,7 @@
 const cp = require("child_process");
 const chalk = require("chalk");
 const axios = require("axios");
-const { getOr, capitalize } = require("lodash/fp");
+const { getOr } = require("lodash/fp");
 
 const config = require("./config");
 require("dotenv").config({ path: config.envPath });

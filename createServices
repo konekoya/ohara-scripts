@@ -51,13 +51,15 @@ async function createServices(nodeName) {
     });
 
     // Create zookeeper, broker, worker
-    await axios.post(`${API_ROOT}/zookeepers`, {
+    const zookeeperResponse = await axios.post(`${API_ROOT}/zookeepers`, {
       group: "zookeeper",
       name: "workspace1",
       nodeNames: [nodeName],
     });
 
-    await axios.post(`${API_ROOT}/brokers`, {
+    console.log(zookeeperResponse.data);
+
+    const brokerResponse = await axios.post(`${API_ROOT}/brokers`, {
       group: "broker",
       name: "workspace1",
       zookeeperClusterKey: {
@@ -67,7 +69,9 @@ async function createServices(nodeName) {
       nodeNames: [nodeName],
     });
 
-    await axios.post(`${API_ROOT}/workers`, {
+    console.log(brokerResponse.data);
+
+    const workerResponse = await axios.post(`${API_ROOT}/workers`, {
       group: "worker",
       name: "workspace1",
       brokerClusterKey: {
@@ -77,29 +81,19 @@ async function createServices(nodeName) {
       nodeNames: [nodeName],
     });
 
-    axios.post(`${API_ROOT}/objects`, {
+    console.log(workerResponse.data);
+
+    const workspaceResponse = await axios.post(`${API_ROOT}/objects`, {
       nodeNames: [nodeName],
       name: "workspace1",
       group: "workspace",
-      worker: {
-        name: "workspace1",
-        nodeNames: ["joshua-dev-01"],
-        group: "worker",
-        brokerClusterKey: { group: "broker", name: "workspace1" },
-        freePorts: [15678, 22016, 49148, 25560, 49866],
-      },
-      broker: {
-        name: "workspace1",
-        nodeNames: ["joshua-dev-01"],
-        group: "broker",
-        zookeeperClusterKey: { group: "zookeeper", name: "workspace1" },
-      },
-      zookeeper: {
-        name: "workspace1",
-        nodeNames: ["joshua-dev-01"],
-        group: "zookeeper",
-      },
+      flag: "created",
+      worker: { ...workerResponse.data },
+      broker: { ...brokerResponse.data },
+      zookeeper: { ...zookeeperResponse.data },
     });
+
+    console.log(workspaceResponse.data);
   } catch (error) {
     console.log(error);
   }
