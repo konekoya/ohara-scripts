@@ -3,6 +3,7 @@
 const chalk = require("chalk");
 const config = require("./config");
 const { run } = require("./utils");
+const { MODES } = require("./const");
 require("dotenv").config({ path: config.envPath });
 
 const configuratorName = process.env.CONFIGURATOR_NAME;
@@ -11,40 +12,10 @@ const masterIp = process.env.K8S_MASTER;
 const slaveIp = process.env.K8S_SLAVE;
 const configuratorImage = `oharastream/configurator:${imageVersion}`;
 
-const MODES = {
-  FAKE: "FAKE",
-  K8S: "K8S",
-  DOCKER: "DOCKER"
-};
-
 console.log(
   chalk.blue(`📃Start a configurator named ${configuratorName} on ${masterIp}`)
 );
 console.log();
-
-function parseArgs() {
-  const option = process.argv.slice(2);
-  // Default mode
-  if (option.length === 0) {
-    return MODES.K8S;
-  }
-
-  // For now, users can only pass a single option
-  if (option.length > 1) {
-    throw new Error(
-      `You can only pass a single CLI option to this program! Instead, receiving: ${option}`
-    );
-  }
-
-  const [mode] = option;
-  const validModes = Object.values(MODES);
-
-  if (validModes.includes(mode.toUpperCase())) {
-    return mode;
-  }
-
-  throw new Error(`Unrecognized CLI option of ${mode}`);
-}
 
 try {
   const currentMode = parseArgs().toUpperCase();
@@ -73,4 +44,28 @@ try {
   );
 } catch (error) {
   console.log(chalk.red(error.message));
+}
+
+function parseArgs() {
+  const option = process.argv.slice(2);
+  // Default mode
+  if (option.length === 0) {
+    return MODES.K8S;
+  }
+
+  // For now, users can only pass a single option
+  if (option.length > 1) {
+    throw new Error(
+      `You can only pass a single CLI option to this program! Instead, receiving: ${option}`
+    );
+  }
+
+  const [mode] = option;
+  const validModes = Object.values(MODES);
+
+  if (validModes.includes(mode.toUpperCase())) {
+    return mode;
+  }
+
+  throw new Error(`Unrecognized CLI option of ${mode}`);
 }

@@ -3,23 +3,12 @@
 const config = require("./config");
 const chalk = require("chalk");
 const axios = require("axios");
+const { API_URLS } = require("./const");
 require("dotenv").config({ path: config.envPath });
 
-const API_ROOT = process.env.API_ROOT;
 const SLAVE_IP = process.env.K8S_SLAVE;
 
 console.log(chalk.blue(`📃 Deleting all services running on ${SLAVE_IP}`));
-
-const CONNECTOR_URL = `${API_ROOT}/connectors`;
-const STREAM_URL = `${API_ROOT}/streams`;
-const SHABONDI_URL = `${API_ROOT}/shabondis`;
-const TOPIC_URL = `${API_ROOT}/topics`;
-const WORKER_URL = `${API_ROOT}/workers`;
-const BROKER_URL = `${API_ROOT}/brokers`;
-const ZOOKEEPER_URL = `${API_ROOT}/zookeepers`;
-const PIPELINE_URL = `${API_ROOT}/pipelines`;
-const NODE_URL = `${API_ROOT}/nodes`;
-const OBJECT_URL = `${API_ROOT}/objects`;
 
 (async () => {
   await deleteAllServices();
@@ -27,80 +16,80 @@ const OBJECT_URL = `${API_ROOT}/objects`;
 
 async function deleteAllServices() {
   // delete all connectors
-  const connectorResponse = await axios.get(CONNECTOR_URL);
+  const connectorResponse = await axios.get(API_URLS.CONNECTOR);
   await Promise.all(
     connectorResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${CONNECTOR_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${CONNECTOR_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.CONNECTOR}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.CONNECTOR}/${name}?group=${group}`);
     })
   );
 
-  const streamResponse = await axios.get(STREAM_URL);
+  const streamResponse = await axios.get(API_URLS.STREAM);
   await Promise.all(
     streamResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${STREAM_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${STREAM_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.STREAM}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.STREAM}/${name}?group=${group}`);
     })
   );
 
-  const shabondiResponse = await axios.get(SHABONDI_URL);
+  const shabondiResponse = await axios.get(API_URLS.SHABONDI);
   await Promise.all(
     shabondiResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${SHABONDI_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${SHABONDI_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.SHABONDI}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.SHABONDI}/${name}?group=${group}`);
     })
   );
 
-  const topicResponse = await axios.get(TOPIC_URL);
+  const topicResponse = await axios.get(API_URLS.TOPIC);
   await Promise.all(
     topicResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${TOPIC_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${TOPIC_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.TOPIC}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.TOPIC}/${name}?group=${group}`);
     })
   );
 
-  const workerResponse = await axios.get(WORKER_URL);
+  const workerResponse = await axios.get(API_URLS.WORKER);
   await Promise.all(
     workerResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${WORKER_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${WORKER_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.WORKER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.WORKER}/${name}?group=${group}`);
     })
   );
 
-  const brokerResponse = await axios.get(BROKER_URL);
+  const brokerResponse = await axios.get(API_URLS.BROKER);
   await Promise.all(
     brokerResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${BROKER_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${BROKER_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.BROKER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.BROKER}/${name}?group=${group}`);
     })
   );
 
-  const zookeeperResponse = await axios.get(ZOOKEEPER_URL);
+  const zookeeperResponse = await axios.get(API_URLS.ZOOKEEPER);
   await Promise.all(
     zookeeperResponse.data.map(async ({ group, name }) => {
-      await axios.put(`${ZOOKEEPER_URL}/${name}/stop?group=${group}`);
-      await axios.delete(`${ZOOKEEPER_URL}/${name}?group=${group}`);
+      await axios.put(`${API_URLS.ZOOKEEPER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.ZOOKEEPER}/${name}?group=${group}`);
     })
   );
 
-  const pipelineResponse = await axios.get(PIPELINE_URL);
+  const pipelineResponse = await axios.get(API_URLS.PIPELINE);
   await Promise.all(
     pipelineResponse.data.map(async ({ group, name }) => {
-      await axios.delete(`${PIPELINE_URL}/${name}?group=${group}`);
+      await axios.delete(`${API_URLS.PIPELINE}/${name}?group=${group}`);
     })
   );
 
-  const nodeResponse = await axios.get(NODE_URL);
+  const nodeResponse = await axios.get(API_URLS.NODE);
   await Promise.all(
     nodeResponse.data.map(async ({ hostname }) => {
-      await axios.delete(`${NODE_URL}/${hostname}`);
+      await axios.delete(`${API_URLS.NODE}/${hostname}`);
     })
   );
 
-  const objectResponse = await axios.get(OBJECT_URL);
+  const objectResponse = await axios.get(API_URLS.OBJECT);
   await Promise.all(
     objectResponse.data.map(async ({ group, name }) => {
-      await axios.delete(`${OBJECT_URL}/${name}?group=${group}`);
+      await axios.delete(`${API_URLS.OBJECT}/${name}?group=${group}`);
     })
   );
 }

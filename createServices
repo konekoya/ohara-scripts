@@ -4,89 +4,91 @@ const chalk = require("chalk");
 const axios = require("axios");
 const config = require("./config");
 const { capitalize } = require("lodash/fp");
-const { run, getMode } = require("./utils");
+const { getMode } = require("./utils");
+const { API_URLS, MODES } = require("./const");
 require("dotenv").config({ path: config.envPath });
 
-const configuratorName = process.env.CONFIGURATOR_NAME;
-const imageVersion = process.env.IMAGE_VERSION;
-const masterIp = process.env.K8S_MASTER;
-const API_ROOT = process.env.API_ROOT;
-const configuratorImage = `oharastream/configurator:${imageVersion}`;
-
-const MODES = {
-  FAKE: "FAKE",
-  K8S: "K8S",
-  DOCKER: "DOCKER",
-};
-
 console.log(chalk.blue(`📃Creating a workspace named workspace1`));
-console.log();
 
 (async () => {
   const mode = await getMode();
 
-  console.log(
-    chalk.blue(`You're currently using ${capitalize(mode)} Configurator`)
-  );
+  if (mode !== MODES.FAKE) {
+    return console.log(
+      chalk.red(
+        `The mode: ${capitalize(
+          mode
+        )} that you're using is not supported! You can only run this script with ${capitalize(
+          MODES.FAKE
+        )} for now.`
+      )
+    );
+  }
 
   // Create Node
   const nodeName = "joshua-dev-01";
 
   createServices(nodeName);
-
-  // Passing config
-
-  // Starting
-
-  // Create workspace
 })();
 
 async function createServices(nodeName) {
   try {
-    await axios.post(`${API_ROOT}/nodes`, {
+    await axios.post(API_URLS.NODE, {
       hostname: nodeName,
       port: 22,
       user: "Joshua",
       password: "password",
     });
 
+    const workspaceName = "workspace1";
+    const workspaceGroup = "workspace";
+    const zookeeperGroup = "zookeeper";
+    const brokerGroup = "broker";
+    const workerGroup = "worker";
+
     // Create zookeeper, broker, worker
-    const zookeeperResponse = await axios.post(`${API_ROOT}/zookeepers`, {
-      group: "zookeeper",
-      name: "workspace1",
+    const zookeeperResponse = await axios.post(API_URLS.ZOOKEEPER, {
+      group: zookeeperGroup,
+      name: workspaceName,
       nodeNames: [nodeName],
     });
 
-    console.log(zookeeperResponse.data);
+    await axios.put(
+      `${API_URLS.ZOOKEEPER}/${workspaceName}/start?group=${zookeeperGroup}`
+    );
 
-    const brokerResponse = await axios.post(`${API_ROOT}/brokers`, {
-      group: "broker",
-      name: "workspace1",
+    const brokerResponse = await axios.post(API_URLS.BROKER, {
+      group: brokerGroup,
+      name: workspaceName,
       zookeeperClusterKey: {
-        group: "zookeeper",
-        name: "workspace1",
+        group: zookeeperGroup,
+        name: workspaceName,
       },
       nodeNames: [nodeName],
     });
 
-    console.log(brokerResponse.data);
+    await axios.put(
+      `${API_URLS.BROKER}/${workspaceName}/start?group=${brokerGroup}`
+    );
 
-    const workerResponse = await axios.post(`${API_ROOT}/workers`, {
-      group: "worker",
-      name: "workspace1",
+    const workerResponse = await axios.post(API_URLS.WORKER, {
+      group: workerGroup,
+      name: workspaceName,
       brokerClusterKey: {
-        group: "broker",
-        name: "workspace1",
+        group: brokerGroup,
+        name: workspaceName,
       },
       nodeNames: [nodeName],
     });
 
-    console.log(workerResponse.data);
+    await axios.put(
+      `${API_URLS.WORKER}/${workspaceName}/start?group=${workerGroup}`
+    );
 
-    const workspaceResponse = await axios.post(`${API_ROOT}/objects`, {
+    const workspaceResponse = await axios.post(API_URLS.OBJECT, {
       nodeNames: [nodeName],
-      name: "workspace1",
-      group: "workspace",
+      group: workspaceGroup,
+      name: workspaceName,
       flag: "created",
       worker: { ...workerResponse.data },
       broker: { ...brokerResponse.data },

@@ -8,7 +8,7 @@ require("dotenv").config({ path: config.envPath });
 const API_ROOT = process.env.API_ROOT;
 const USER_NAME = process.env.USER_NAME;
 const MASTER_IP = process.env.K8S_MASTER;
-const SLAVE_IP = process.env.CONFIGURATOR_NAME;
+const SLAVE_IP = process.env.K8S_SLAVE;
 
 const CONFIGURATOR_NAME = process.env.CONFIGURATOR_NAME;
 const IMAGE_VERSION = process.env.IMAGE_VERSION;

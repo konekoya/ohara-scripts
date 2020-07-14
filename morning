@@ -12,16 +12,20 @@ wifi.init({ iface: null });
 wifi.getCurrentConnections(function (err, currentConnections) {
   if (err) console.log(err);
 
-  const validWifiName = "Is-land-dev";
+  const validWifiNames = ["Is-land-dev", "Is-land-dev-1"];
   const currentWifiName = getOr("", "[0].ssid", currentConnections);
 
-  if (currentWifiName !== validWifiName) {
+  if (currentWifiName.length === 0) {
+    return console.log(chalk.red(`You are not connecting to any Wifi!`));
+  }
+
+  if (!validWifiNames.includes(currentWifiName)) {
     return console.log(
       chalk.red(
         `Oops, you're using an invalid Wifi: ${chalk.underline(
           currentWifiName
         )}. You have to use ${chalk.underline(
-          validWifiName
+          validWifiNames.join(", ")
         )} in order to make this script work.`
       )
     );
