@@ -5,6 +5,8 @@ const { getOr } = require("lodash/fp");
 const wifi = require("node-wifi");
 
 console.log(chalk.blue(`📃 Good morning Joshua! Let's prepare your day :)`));
+cp.execSync("listEnv", { stdio: "inherit" });
+
 
 // network interface, choose a random wifi interface if set to null
 wifi.init({ iface: null });
@@ -31,7 +33,6 @@ wifi.getCurrentConnections(function (err, currentConnections) {
     );
   }
 
-  cp.execSync("listEnv", { stdio: "inherit" });
   cp.execSync("cleanup", { stdio: "inherit" });
   cp.execSync("updateImages", { stdio: "inherit" });
   cp.execSync("updateBranch", { stdio: "inherit" });

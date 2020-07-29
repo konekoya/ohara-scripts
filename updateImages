@@ -16,8 +16,7 @@ const images = [
 ];
 
 console.log(chalk.blue(`📃 Updating images`));
-console.log();
-
+  
 const runMaster = run();
 const runSlave = run({ isMaster: false });
 
