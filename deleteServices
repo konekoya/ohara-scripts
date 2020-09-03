@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const config = require("./config");
-const chalk = require("chalk");
-const axios = require("axios");
-const { API_URLS } = require("./const");
-require("dotenv").config({ path: config.envPath });
+const config = require('./config');
+const chalk = require('chalk');
+const axios = require('axios');
+const { API_URLS } = require('./const');
+require('dotenv').config({ path: config.envPath });
 
 const SLAVE_IP = process.env.K8S_SLAVE;
 
@@ -93,82 +93,3 @@ async function deleteAllServices() {
     })
   );
 }
-
-// async function waitUntil(retryUrl, checkBreakCondition) {
-//   const maxRetry = 5;
-//   let retryCount = 0;
-//   const sleepTime = 2000;
-
-//   while (retryCount < maxRetry) {
-//     try {
-//       const response = await retryUrl();
-//       if (checkBreakCondition(response)) return response;
-//     } catch (error) {
-//       console.log("retry API failed but we will continue to execute: ", error);
-//     }
-
-//     await sleep(sleepTime);
-//     retryCount++;
-//   }
-// }
-
-// function isStopped(response) {
-//   return typeof response.data.state === "undefined";
-// }
-
-// const waitForRunning = (res) => res.data.state === SERVICE_STATE.RUNNING;
-
-// const waitForClassInfosReady = (res) => !isEmpty(res.data.classInfos);
-
-// const waitForTopicReady = (res) => res.data.state === SERVICE_STATE.RUNNING;
-
-// const wait = async ({
-//   api,
-//   objectKey,
-//   checkFn,
-//   checkParam,
-//   maxRetry = 10,
-//   sleep = 2000,
-// }: {
-//   api: API,
-//   objectKey,
-//   checkFn: (res, params) => boolean,
-//   checkParam?: object,
-//   maxRetry?: number,
-//   sleep?: number,
-// }) => {
-//   let retryCount = 0;
-//   while (retryCount < maxRetry) {
-//     try {
-//       const res =
-//         (await api.get) <
-//         T >
-//         {
-//           name: objectKey.name,
-//           queryParams: { group: objectKey.group },
-//         };
-//       if (checkFn(res, checkParam)) {
-//         return res;
-//       }
-//     } catch (error) {
-//       //Something went wrong, but we still retry until exceed maxRetry
-//       // eslint-disable-next-line no-console
-//       console.log("retry API failed but we will continue to execute: ", error);
-//     }
-
-//     await commonUtils.sleep(sleep);
-//     retryCount++;
-//   }
-//   const errorRes: BasicResponse = {
-//     data: {
-//       error: {
-//         code: "N/A",
-//         message: "exceed max retry",
-//         stack: "",
-//       },
-//     },
-//     status: -1,
-//     title: "WaitApi Failed.",
-//   };
-//   throw errorRes;
-// };
