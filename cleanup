@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const cp = require("child_process");
-const chalk = require("chalk");
-const config = require("./config");
-const { run } = require("./utils");
-require("dotenv").config({ path: config.envPath });
+const cp = require('child_process');
+const chalk = require('chalk');
+const config = require('./config');
+const { run } = require('./utils');
+require('dotenv').config({ path: config.envPath });
 
 const configuratorName = process.env.CONFIGURATOR_NAME;
 const userName = process.env.USER_NAME;
@@ -20,9 +20,12 @@ console.log(
 try {
   console.log(chalk.blue(`First up, delete all pods on ${slaveIp}`));
   runMaster(`kubectl delete pods --all --grace-period=0 --force`);
+  // Delete k8s volumes
+  runMaster(`kubectl delete pvc --all`);
+  runMaster(`kubectl delete pv --all`);
 
   runMaster(`kubectl get pods`);
-  runSlave("docker ps -a");
+  runSlave('docker ps -a');
 } catch (error) {
   console.log(error);
   console.log(chalk.red(`Oops, failed to delete pods...`));
@@ -57,10 +60,10 @@ try {
 
   console.log(
     chalk.blue(
-      "Here are some more info of the currently running configurator container:"
+      'Here are some more info of the currently running configurator container:'
     )
   );
-  runMaster("docker ps -a");
+  runMaster('docker ps -a');
 } catch (error) {
   console.log(error);
   console.log(
