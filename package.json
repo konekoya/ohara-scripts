@@ -1,14 +1,14 @@
 {
   "private": true,
   "dependencies": {
-    "axios": "^0.19.2",
-    "chalk": "^2.4.2",
-    "dotenv": "^8.2.0",
-    "eslint": "^7.4.0",
-    "husky": "^4.3.0",
-    "lodash": "^4.17.15",
-    "node-wifi": "^2.0.13",
-    "sha.js": "^2.4.11"
+    "axios": "0.19.2",
+    "chalk": "2.4.2",
+    "dotenv": "8.2.0",
+    "eslint": "7.4.0",
+    "husky": "4.3.0",
+    "lodash": "4.17.15",
+    "node-wifi": "2.0.13",
+    "sha.js": "2.4.11"
   },
   "scripts": {
     "lint": "eslint --max-warnings 0 \"./**/*\""
