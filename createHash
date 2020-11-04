@@ -20,7 +20,6 @@ const [, , group, name] = process.argv;
 if (!group || !name) {
   console.log(chalk.red(`Did you provide correct input arguments?`));
   console.log(chalk.yellow(`Usage: createHash group name`));
-  debugger;
 } else {
   console.log(chalk.green(`Hash created: ${hash(`${group}${name}`)}`));
 }
