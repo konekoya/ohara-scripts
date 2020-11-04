@@ -20,10 +20,14 @@ console.log(
 try {
   console.log(chalk.blue(`First up, delete all pods on ${slaveIp}`));
   runMaster(`kubectl delete pods --all --grace-period=0 --force`);
-  // Delete k8s volumes
+
+  console.log(
+    chalk.blue('Removing docker container volumes if there are any:')
+  );
   runMaster(`kubectl delete pvc --all`);
   runMaster(`kubectl delete pv --all`);
 
+  console.log(chalk.blue('Listing all pods:'));
   runMaster(`kubectl get pods`);
   runSlave('docker ps -a');
 } catch (error) {
