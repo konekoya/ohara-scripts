@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-const sha = require("sha.js");
-const chalk = require("chalk");
+const sha = require('sha.js');
+const chalk = require('chalk');
 
 const defaultHashOptions = {
-  algorithm: "sha256",
-  encode: "hex",
-  maxLength: 8
+  algorithm: 'sha256',
+  encode: 'hex',
+  maxLength: 8,
 };
 
-const hash = (input = "", options = defaultHashOptions) =>
+const hash = (input = '', options = defaultHashOptions) =>
   sha(options.algorithm)
     .update(input)
     .digest(options.encode)
@@ -20,6 +20,7 @@ const [, , group, name] = process.argv;
 if (!group || !name) {
   console.log(chalk.red(`Did you provide correct input arguments?`));
   console.log(chalk.yellow(`Usage: createHash group name`));
+  debugger;
 } else {
   console.log(chalk.green(`Hash created: ${hash(`${group}${name}`)}`));
 }

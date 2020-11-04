@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const chalk = require("chalk");
-const config = require("./config");
-const { run } = require("./utils");
-const { MODES } = require("./const");
-require("dotenv").config({ path: config.envPath });
+const chalk = require('chalk');
+const config = require('./config');
+const { run } = require('./utils');
+const { MODES } = require('./const');
+require('dotenv').config({ path: config.envPath });
 
 const configuratorName = process.env.CONFIGURATOR_NAME;
 const imageVersion = process.env.IMAGE_VERSION;
@@ -13,7 +13,7 @@ const slaveIp = process.env.K8S_SLAVE;
 const configuratorImage = `oharastream/configurator:${imageVersion}`;
 
 console.log(
-  chalk.blue(`📃Start a configurator named ${configuratorName} on ${masterIp}`)
+  chalk.blue(`📃 Start a configurator named ${configuratorName} on ${masterIp}`)
 );
 console.log();
 
