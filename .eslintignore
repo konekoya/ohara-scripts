@@ -1,2 +1,4 @@
+# node_modules are excluded by default
+
 *.json
 yarn.lock
