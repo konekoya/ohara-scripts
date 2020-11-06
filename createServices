@@ -1,12 +1,12 @@
-#!/usr/bin/env node
+#!/usr/bin/env yarn node
 
-const chalk = require("chalk");
-const axios = require("axios");
-const config = require("./config");
-const { capitalize } = require("lodash/fp");
-const { getMode } = require("./utils");
-const { API_URLS, MODES } = require("./const");
-require("dotenv").config({ path: config.envPath });
+const chalk = require('chalk');
+const axios = require('axios');
+const config = require('./config');
+const { capitalize } = require('lodash/fp');
+const { getMode } = require('./utils');
+const { API_URLS, MODES } = require('./const');
+require('dotenv').config({ path: config.envPath });
 
 console.log(chalk.blue(`📃Creating a workspace named workspace1`));
 
@@ -26,7 +26,7 @@ console.log(chalk.blue(`📃Creating a workspace named workspace1`));
   }
 
   // Create Node
-  const nodeName = "joshua-dev-01";
+  const nodeName = 'joshua-dev-01';
 
   createServices(nodeName);
 })();
@@ -36,15 +36,15 @@ async function createServices(nodeName) {
     await axios.post(API_URLS.NODE, {
       hostname: nodeName,
       port: 22,
-      user: "Joshua",
-      password: "password",
+      user: 'Joshua',
+      password: 'password',
     });
 
-    const workspaceName = "workspace1";
-    const workspaceGroup = "workspace";
-    const zookeeperGroup = "zookeeper";
-    const brokerGroup = "broker";
-    const workerGroup = "worker";
+    const workspaceName = 'workspace1';
+    const workspaceGroup = 'workspace';
+    const zookeeperGroup = 'zookeeper';
+    const brokerGroup = 'broker';
+    const workerGroup = 'worker';
 
     // Create zookeeper, broker, worker
     const zookeeperResponse = await axios.post(API_URLS.ZOOKEEPER, {
@@ -89,7 +89,7 @@ async function createServices(nodeName) {
       nodeNames: [nodeName],
       group: workspaceGroup,
       name: workspaceName,
-      flag: "created",
+      flag: 'created',
       worker: { ...workerResponse.data },
       broker: { ...brokerResponse.data },
       zookeeper: { ...zookeeperResponse.data },

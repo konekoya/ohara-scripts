@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env yarn node
 
-const config = require("./config");
-const chalk = require("chalk");
+const config = require('./config');
+const chalk = require('chalk');
 
-require("dotenv").config({ path: config.envPath });
+require('dotenv').config({ path: config.envPath });
 
 const API_ROOT = process.env.API_ROOT;
 const USER_NAME = process.env.USER_NAME;
@@ -14,13 +14,13 @@ const CONFIGURATOR_NAME = process.env.CONFIGURATOR_NAME;
 const IMAGE_VERSION = process.env.IMAGE_VERSION;
 
 console.log(
-  chalk.blue("Running scripts with the following environment variables")
+  chalk.blue('Running scripts with the following environment variables')
 );
-console.log("=".repeat(50));
+console.log('='.repeat(50));
 console.log(`API root:           ${chalk.blue(API_ROOT)}`);
 console.log(`Master IP:          ${chalk.blue(MASTER_IP)}`);
 console.log(`Slave IP:           ${chalk.blue(SLAVE_IP)}`);
 console.log(`User name:          ${chalk.blue(USER_NAME)}`);
 console.log(`Configurator name:  ${chalk.blue(CONFIGURATOR_NAME)}`);
 console.log(`Image name:         ${chalk.blue(IMAGE_VERSION)}`);
-console.log("=".repeat(50));
+console.log('='.repeat(50));

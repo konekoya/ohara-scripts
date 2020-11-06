@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env yarn node
 
 const cp = require('child_process');
 const chalk = require('chalk');

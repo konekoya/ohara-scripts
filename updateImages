@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env yarn node
 
-const chalk = require("chalk");
-const config = require("./config");
-const { run } = require("./utils");
-require("dotenv").config({ path: config.envPath });
+const chalk = require('chalk');
+const config = require('./config');
+const { run } = require('./utils');
+require('dotenv').config({ path: config.envPath });
 
 const imageVersion = process.env.IMAGE_VERSION;
 const configuratorImage = `oharastream/configurator:${imageVersion}`;
@@ -16,12 +16,12 @@ const images = [
 ];
 
 console.log(chalk.blue(`📃 Updating images`));
-  
+
 const runMaster = run();
 const runSlave = run({ isMaster: false });
 
-runMaster("docker system prune -a -f");
-runSlave("docker system prune -a -f");
+runMaster('docker system prune -a -f');
+runSlave('docker system prune -a -f');
 runMaster(`docker pull ${configuratorImage}`);
 
 images.forEach((image) => runSlave(`docker pull ${image}`));
