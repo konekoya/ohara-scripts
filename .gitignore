@@ -1,2 +1,12 @@
 node_modules
 .env
+
+
+# yarn 2
+
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
