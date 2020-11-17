@@ -723,10 +723,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-node-wifi@2.0.13:
-  version "2.0.13"
-  resolved "https://registry.yarnpkg.com/node-wifi/-/node-wifi-2.0.13.tgz#44fe231be54f1e8210208e0665917aac6fcca76d"
-  integrity sha512-xgLCPVp4twcV2XsdtKF0PaLD8vhQjhnzmT3OVoX/+SqMqNSIDy4JRzvD9Khjld1BKkuch8z3CU7SXAGUvaogdQ==
+node-wifi@2.0.14:
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/node-wifi/-/node-wifi-2.0.14.tgz#3b6648db55fc603912525280fbf76745da53457c"
+  integrity sha512-yR8asJJsMY3xqGeHHh0Zwqo7fjB4qN/Sxr1soR7xeAxnr1MnYFwD4uLATjQc8htgx5X4sN9AeWomz0xxNVXhsA==
   dependencies:
     command-line-args "^3.0.1"
     command-line-usage "^5.0.5"
