@@ -2,3 +2,4 @@
 
 *.json
 yarn.lock
+*.md

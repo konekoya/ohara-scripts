@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-const config = require("./config");
-const chalk = require("chalk");
+const chalk = require('chalk');
+const config = require('./config');
+const { logger } = require('./utils');
 
-require("dotenv").config({ path: config.envPath });
+require('dotenv').config({ path: config.envPath });
 
 const API_ROOT = process.env.API_ROOT;
 const USER_NAME = process.env.USER_NAME;
@@ -13,14 +14,13 @@ const SLAVE_IP = process.env.K8S_SLAVE;
 const CONFIGURATOR_NAME = process.env.CONFIGURATOR_NAME;
 const IMAGE_VERSION = process.env.IMAGE_VERSION;
 
-console.log(
-  chalk.blue("Running scripts with the following environment variables")
-);
-console.log("=".repeat(50));
-console.log(`API root:           ${chalk.blue(API_ROOT)}`);
-console.log(`Master IP:          ${chalk.blue(MASTER_IP)}`);
-console.log(`Slave IP:           ${chalk.blue(SLAVE_IP)}`);
-console.log(`User name:          ${chalk.blue(USER_NAME)}`);
-console.log(`Configurator name:  ${chalk.blue(CONFIGURATOR_NAME)}`);
-console.log(`Image name:         ${chalk.blue(IMAGE_VERSION)}`);
-console.log("=".repeat(50));
+logger.info('Running scripts with the following environment variables');
+
+logger.log('='.repeat(60));
+logger.log(`API root:           ${chalk.blue(API_ROOT)}`);
+logger.log(`Master IP:          ${chalk.blue(MASTER_IP)}`);
+logger.log(`Slave IP:           ${chalk.blue(SLAVE_IP)}`);
+logger.log(`User name:          ${chalk.blue(USER_NAME)}`);
+logger.log(`Configurator name:  ${chalk.blue(CONFIGURATOR_NAME)}`);
+logger.log(`Image name:         ${chalk.blue(IMAGE_VERSION)}`);
+logger.log('='.repeat(60));

@@ -2,7 +2,7 @@
 
 const chalk = require('chalk');
 const config = require('./config');
-const { run } = require('./utils');
+const { run, logger } = require('./utils');
 const { MODES } = require('./const');
 require('dotenv').config({ path: config.envPath });
 
@@ -12,15 +12,14 @@ const masterIp = process.env.K8S_MASTER;
 const slaveIp = process.env.K8S_SLAVE;
 const configuratorImage = `oharastream/configurator:${imageVersion}`;
 
-console.log(
-  chalk.blue(`📃 Start a configurator named ${configuratorName} on ${masterIp}`)
-);
-console.log();
+logger.info(`📃 Start a configurator named ${configuratorName} on ${masterIp}`);
+logger.log();
 
 try {
   const currentMode = parseArgs().toUpperCase();
   const runMaster = run();
 
+  console.log(currentMode);
   if (currentMode == MODES.K8S) {
     runMaster(
       `docker run -d --name ${configuratorName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`
@@ -35,15 +34,13 @@ try {
     );
   }
 
-  console.log(
-    chalk.green(
-      `👍 Successfully created the configurator: ${chalk.bold(
-        configuratorName
-      )} in ${currentMode} mode`
-    )
+  logger.success(
+    `👍 Successfully created the configurator: ${chalk.bold(
+      configuratorName
+    )} in ${currentMode} mode`
   );
 } catch (error) {
-  console.log(chalk.red(error.message));
+  logger.error(error.message);
 }
 
 function parseArgs() {

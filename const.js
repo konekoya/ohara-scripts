@@ -1,15 +1,15 @@
-const config = require("./config");
-require("dotenv").config({ path: config.envPath });
+const config = require('./config');
+require('dotenv').config({ path: config.envPath });
 
 const API_ROOT = process.env.API_ROOT;
 
-module.exports.MODES = {
-  FAKE: "FAKE",
-  K8S: "K8S",
-  DOCKER: "DOCKER",
+const MODES = {
+  FAKE: 'FAKE',
+  K8S: 'K8S',
+  DOCKER: 'DOCKER',
 };
 
-module.exports.API_URLS = {
+const API_URLS = {
   CONNECTOR: `${API_ROOT}/connectors`,
   STREAM: `${API_ROOT}/streams`,
   SHABONDI: `${API_ROOT}/shabondis`,
@@ -20,4 +20,9 @@ module.exports.API_URLS = {
   PIPELINE: `${API_ROOT}/pipelines`,
   NODE: `${API_ROOT}/nodes`,
   OBJECT: `${API_ROOT}/objects`,
+};
+
+module.exports = {
+  MODES,
+  API_URLS,
 };
