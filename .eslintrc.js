@@ -5,11 +5,11 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: "eslint:recommended",
+  extends: 'eslint:recommended',
   parserOptions: {
     ecmaVersion: 11,
   },
   rules: {
-    "no-debugger": "warn",
+    'no-debugger': 'warn',
   },
 };

@@ -27,7 +27,7 @@ const getMode = async () => {
     return getOr(null, 'data.mode', response);
   } catch (error) {
     console.log(
-      chalk.red(`Oops, we cannot fetch Configurator info from ${API_ROOT}`)
+      chalk.red(`Oops, we cannot fetch Configurator info from ${API_ROOT}`),
     );
     console.log(error.message);
   }
