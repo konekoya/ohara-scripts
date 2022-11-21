@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+
+const config = require('./config');
+const chalk = require('chalk');
+const axios = require('axios');
+const { API_URLS } = require('./const');
+require('dotenv').config({ path: config.envPath });
+
+const SLAVE_IP = process.env.K8S_SLAVE;
+
+console.log(chalk.blue(`📃 Deleting all services running on ${SLAVE_IP}`));
+
+(async () => {
+  await deleteAllServices();
+})();
+
+async function deleteAllServices() {
+  // delete all connectors
+  const connectorResponse = await axios.get(API_URLS.CONNECTOR);
+  await Promise.all(
+    connectorResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.CONNECTOR}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.CONNECTOR}/${name}?group=${group}`);
+    })
+  );
+
+  const streamResponse = await axios.get(API_URLS.STREAM);
+  await Promise.all(
+    streamResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.STREAM}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.STREAM}/${name}?group=${group}`);
+    })
+  );
+
+  const shabondiResponse = await axios.get(API_URLS.SHABONDI);
+  await Promise.all(
+    shabondiResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.SHABONDI}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.SHABONDI}/${name}?group=${group}`);
+    })
+  );
+
+  const topicResponse = await axios.get(API_URLS.TOPIC);
+  await Promise.all(
+    topicResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.TOPIC}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.TOPIC}/${name}?group=${group}`);
+    })
+  );
+
+  const workerResponse = await axios.get(API_URLS.WORKER);
+  await Promise.all(
+    workerResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.WORKER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.WORKER}/${name}?group=${group}`);
+    })
+  );
+
+  const brokerResponse = await axios.get(API_URLS.BROKER);
+  await Promise.all(
+    brokerResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.BROKER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.BROKER}/${name}?group=${group}`);
+    })
+  );
+
+  const zookeeperResponse = await axios.get(API_URLS.ZOOKEEPER);
+  await Promise.all(
+    zookeeperResponse.data.map(async ({ group, name }) => {
+      await axios.put(`${API_URLS.ZOOKEEPER}/${name}/stop?group=${group}`);
+      await axios.delete(`${API_URLS.ZOOKEEPER}/${name}?group=${group}`);
+    })
+  );
+
+  const pipelineResponse = await axios.get(API_URLS.PIPELINE);
+  await Promise.all(
+    pipelineResponse.data.map(async ({ group, name }) => {
+      await axios.delete(`${API_URLS.PIPELINE}/${name}?group=${group}`);
+    })
+  );
+
+  const nodeResponse = await axios.get(API_URLS.NODE);
+  await Promise.all(
+    nodeResponse.data.map(async ({ hostname }) => {
+      await axios.delete(`${API_URLS.NODE}/${hostname}`);
+    })
+  );
+
+  const objectResponse = await axios.get(API_URLS.OBJECT);
+  await Promise.all(
+    objectResponse.data.map(async ({ group, name }) => {
+      await axios.delete(`${API_URLS.OBJECT}/${name}?group=${group}`);
+    })
+  );
+}

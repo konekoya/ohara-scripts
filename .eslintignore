@@ -1,0 +1,6 @@
+# node_modules are excluded by default
+
+yarn.lock
+*.json
+*.md
+*.sh

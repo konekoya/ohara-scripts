@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+const cp = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const config = require('./config');
+const { logger } = require('./utils');
+require('dotenv').config({ path: config.envPath });
+
+const OHARA_PATH = process.env.OHARA_HOME;
+const FILE_PATH = './ohara-it/build/libs';
+const SOURCE_DIR = path.join(OHARA_PATH, FILE_PATH);
+const DEST_DIR = '/Users/joshua/Desktop/testFiles';
+
+logger.info(`📃 Updating testing jars ${OHARA_PATH}`);
+
+try {
+  process.chdir(OHARA_PATH);
+
+  logger.info(`Removing old files from ${path.join(DEST_DIR)}`);
+  const oldFiles = fs.readdirSync(DEST_DIR);
+  oldFiles.forEach((file) => fs.unlinkSync(path.join(DEST_DIR, file)));
+
+  cp.execSync(`ls -alt ${DEST_DIR}`, { stdio: 'inherit' });
+
+  logger.info('Rebuilding ohara it jars...');
+  cp.execSync(`./gradlew clean :ohara-it:jar -PskipManager`, {
+    stdio: 'inherit',
+  });
+
+  logger.info(`Moving file from ${SOURCE_DIR} to ${DEST_DIR}`);
+
+  const files = fs.readdirSync(FILE_PATH);
+  files.forEach((file) => {
+    fs.copyFileSync(path.join(SOURCE_DIR, file), path.join(DEST_DIR, file));
+  });
+
+  logger.success('Done! New jars are list below 👇');
+  cp.execSync(`ls -alt ${DEST_DIR}`, { stdio: 'inherit' });
+} catch (error) {
+  logger.error(error);
+}

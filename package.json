@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "dependencies": {
+    "axios": "0.21.1",
+    "chalk": "4.1.0",
+    "dotenv": "8.2.0",
+    "eslint": "7.17.0",
+    "husky": "4.3.7",
+    "lodash": "4.17.21",
+    "node-wifi": "2.0.13",
+    "prettier": "2.2.1",
+    "sha.js": "2.4.11"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 \"./**/*\"",
+    "format": "prettier --write \"**/**/*.{ts,js,tsx,jsx,md,html,css}\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn lint && yarn format"
+    }
+  }
+}

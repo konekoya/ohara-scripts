@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+
+const cp = require('child_process');
+const chalk = require('chalk');
+const config = require('./config');
+const { run } = require('./utils');
+require('dotenv').config({ path: config.envPath });
+
+const configuratorName = process.env.CONFIGURATOR_NAME;
+const userName = process.env.USER_NAME;
+const masterIp = process.env.K8S_MASTER;
+const slaveIp = process.env.K8S_SLAVE;
+const runMaster = run();
+const runSlave = run({ isMaster: false });
+
+console.log(
+  chalk.blue(`📃 Clean up docker containers on ${masterIp} and ${slaveIp}`)
+);
+
+try {
+  console.log(chalk.blue(`First up, delete all pods on ${slaveIp}`));
+  runMaster(`kubectl delete pods --all --grace-period=0 --force`);
+
+  console.log(
+    chalk.blue('Removing docker container volumes if there are any:')
+  );
+  runMaster(`kubectl delete pvc --all`);
+  runMaster(`kubectl delete pv --all`);
+
+  console.log(chalk.blue('Listing all pods:'));
+  runMaster(`kubectl get pods`);
+  runSlave('docker ps -a');
+} catch (error) {
+  console.log(error);
+  console.log(chalk.red(`Oops, failed to delete pods...`));
+}
+
+console.log(chalk.blue(`Next up, let's delete Configurator on ${masterIp}`));
+
+try {
+  const hasContainer = cp
+    .execSync(
+      `ssh ${userName}@${masterIp} docker ps --filter "name=${configuratorName}" -q`
+    )
+    .toString();
+
+  if (hasContainer) {
+    runMaster(`docker rm -f ${configuratorName}`);
+
+    console.log(
+      chalk.green(
+        `👍 Successfully deleted container: ${chalk.bold(configuratorName)}`
+      )
+    );
+    return;
+  }
+
+  console.log();
+  console.log(
+    chalk.yellow(
+      `Could not find a container named ${chalk.bold(configuratorName)}`
+    )
+  );
+
+  console.log(
+    chalk.blue(
+      'Here are some more info of the currently running configurator container:'
+    )
+  );
+  runMaster('docker ps -a');
+} catch (error) {
+  console.log(error);
+  console.log(
+    chalk.red(
+      `Oops, failed to remove container ${chalk.bold(configuratorName)}`
+    )
+  );
+}

@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+const chalk = require('chalk');
+const config = require('./config');
+const { run, logger } = require('./utils');
+const { MODES } = require('./const');
+require('dotenv').config({ path: config.envPath });
+
+const configuratorName = process.env.CONFIGURATOR_NAME;
+const imageVersion = process.env.IMAGE_VERSION;
+const masterIp = process.env.K8S_MASTER;
+const slaveIp = process.env.K8S_SLAVE;
+const configuratorImage = `oharastream/configurator:${imageVersion}`;
+
+logger.info(`📃 Start a configurator named ${configuratorName} on ${masterIp}`);
+logger.log();
+
+try {
+  const currentMode = parseArgs().toUpperCase();
+  const runMaster = run();
+
+  console.log(currentMode);
+  if (currentMode == MODES.K8S) {
+    runMaster(
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} --add-host ohara-dev-103:${slaveIp} ${configuratorImage} --port 12345 --hostname ${masterIp} --k8s http://${masterIp}:8080/api/v1`
+    );
+  } else if (currentMode == MODES.DOCKER) {
+    runMaster(
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 --add-host ohara-dev-102:${masterIp} ${configuratorImage} --port 12345 --hostname ${masterIp}`
+    );
+  } else {
+    runMaster(
+      `docker run -d --name ${configuratorName} --rm -p 12345:12345 ${configuratorImage} --port 12345 --fake true`
+    );
+  }
+
+  logger.success(
+    `👍 Successfully created the configurator: ${chalk.bold(
+      configuratorName
+    )} in ${currentMode} mode`
+  );
+} catch (error) {
+  logger.error(error.message);
+}
+
+function parseArgs() {
+  const option = process.argv.slice(2);
+  // Default mode
+  if (option.length === 0) {
+    return MODES.K8S;
+  }
+
+  // For now, users can only pass a single option
+  if (option.length > 1) {
+    throw new Error(
+      `You can only pass a single CLI option to this program! Instead, receiving: ${option}`
+    );
+  }
+
+  const [mode] = option;
+  const validModes = Object.values(MODES);
+
+  if (validModes.includes(mode.toUpperCase())) {
+    return mode;
+  }
+
+  throw new Error(`Unrecognized CLI option of ${mode}`);
+}

@@ -1,0 +1,102 @@
+#!/usr/bin/env node
+
+const chalk = require("chalk");
+const axios = require("axios");
+const config = require("./config");
+const { capitalize } = require("lodash/fp");
+const { getMode } = require("./utils");
+const { API_URLS, MODES } = require("./const");
+require("dotenv").config({ path: config.envPath });
+
+console.log(chalk.blue(`📃Creating a workspace named workspace1`));
+
+(async () => {
+  const mode = await getMode();
+
+  if (mode !== MODES.FAKE) {
+    return console.log(
+      chalk.red(
+        `The mode: ${capitalize(
+          mode
+        )} that you're using is not supported! You can only run this script with ${capitalize(
+          MODES.FAKE
+        )} for now.`
+      )
+    );
+  }
+
+  // Create Node
+  const nodeName = "joshua-dev-01";
+
+  createServices(nodeName);
+})();
+
+async function createServices(nodeName) {
+  try {
+    await axios.post(API_URLS.NODE, {
+      hostname: nodeName,
+      port: 22,
+      user: "Joshua",
+      password: "password",
+    });
+
+    const workspaceName = "workspace1";
+    const workspaceGroup = "workspace";
+    const zookeeperGroup = "zookeeper";
+    const brokerGroup = "broker";
+    const workerGroup = "worker";
+
+    // Create zookeeper, broker, worker
+    const zookeeperResponse = await axios.post(API_URLS.ZOOKEEPER, {
+      group: zookeeperGroup,
+      name: workspaceName,
+      nodeNames: [nodeName],
+    });
+
+    await axios.put(
+      `${API_URLS.ZOOKEEPER}/${workspaceName}/start?group=${zookeeperGroup}`
+    );
+
+    const brokerResponse = await axios.post(API_URLS.BROKER, {
+      group: brokerGroup,
+      name: workspaceName,
+      zookeeperClusterKey: {
+        group: zookeeperGroup,
+        name: workspaceName,
+      },
+      nodeNames: [nodeName],
+    });
+
+    await axios.put(
+      `${API_URLS.BROKER}/${workspaceName}/start?group=${brokerGroup}`
+    );
+
+    const workerResponse = await axios.post(API_URLS.WORKER, {
+      group: workerGroup,
+      name: workspaceName,
+      brokerClusterKey: {
+        group: brokerGroup,
+        name: workspaceName,
+      },
+      nodeNames: [nodeName],
+    });
+
+    await axios.put(
+      `${API_URLS.WORKER}/${workspaceName}/start?group=${workerGroup}`
+    );
+
+    const workspaceResponse = await axios.post(API_URLS.OBJECT, {
+      nodeNames: [nodeName],
+      group: workspaceGroup,
+      name: workspaceName,
+      flag: "created",
+      worker: { ...workerResponse.data },
+      broker: { ...brokerResponse.data },
+      zookeeper: { ...zookeeperResponse.data },
+    });
+
+    console.log(workspaceResponse.data);
+  } catch (error) {
+    console.log(error);
+  }
+}

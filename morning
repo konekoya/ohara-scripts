@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+const cp = require('child_process');
+const chalk = require('chalk');
+const wifi = require('node-wifi');
+const { getOr } = require('lodash/fp');
+
+const { logger } = require('./utils');
+
+logger.info(`📃 Good morning Joshua! Let's prepare your day :)`);
+cp.execSync('listEnv', { stdio: 'inherit' });
+
+(async () => {
+  // network interface, choose a random wifi interface if set to null
+  wifi.init({ iface: null });
+
+  const currentConnections = await wifi.getCurrentConnections();
+  const validWifiNames = ['Is-land-dev', 'Is-land-dev-1', 'Joshua-5G'];
+  const currentWifiName = getOr('', '[0].ssid', currentConnections);
+
+  if (currentWifiName.length === 0) {
+    return logger.error(`You are not connecting to any Wifi!`);
+  }
+
+  if (!validWifiNames.includes(currentWifiName)) {
+    return logger.error(
+      `Oops, you're using an invalid Wifi: ${chalk.underline(
+        currentWifiName
+      )}. You have to use ${chalk.underline(
+        validWifiNames.join(', ')
+      )} in order to make this script work.`
+    );
+  }
+
+  cp.execSync('cleanup', { stdio: 'inherit' });
+  cp.execSync('updateImages', { stdio: 'inherit' });
+  cp.execSync('updateBranch', { stdio: 'inherit' });
+  cp.execSync('updateJars', { stdio: 'inherit' });
+  cp.execSync('runOhara', { stdio: 'inherit' });
+
+  logger.success('Finish the script without error. You are ready to go :)');
+})();

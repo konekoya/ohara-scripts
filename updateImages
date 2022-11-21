@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+const config = require('./config');
+const { run, logger } = require('./utils');
+require('dotenv').config({ path: config.envPath });
+
+const imageVersion = process.env.IMAGE_VERSION;
+const configuratorImage = `oharastream/configurator:${imageVersion}`;
+const images = [
+  `oharastream/zookeeper:${imageVersion}`,
+  `oharastream/broker:${imageVersion}`,
+  `oharastream/connect-worker:${imageVersion}`,
+  `oharastream/stream:${imageVersion}`,
+  `oharastream/shabondi:${imageVersion}`,
+];
+
+logger.info(`📃 Updating images`);
+
+const runMaster = run();
+const runSlave = run({ isMaster: false });
+
+runMaster('docker system prune -a -f');
+runSlave('docker system prune -a -f');
+runMaster(`docker pull ${configuratorImage}`);
+
+images.forEach((image) => runSlave(`docker pull ${image}`));
