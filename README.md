@@ -2,34 +2,40 @@
 
 These are scripts that do what I otherwise have to do manually
 
+## Prerequisites
+
+- NodeJS
+- Yarn
+
 ## Setup
 
-1. Drop this into your `.bashrc` or `.zshrc` so the script can be called anywhere in your terminal
+1. Clone this repo
+2. Run yarn from the root dir to install required dependencies
+3. Edit your `.bashrc` or `.zshrc` so the script can be called anywhere from your terminal
 
 ```sh
-# Add ohara script to the path
-export PATH="/Users/joshua/Desktop/dev/ohara-scripts:$PATH"
+# Include ohara script in your path, assuming you didn't change the repo name while cloning
+export PATH="PATH_TO_YOUR_CLONED_REPO/ohara-scripts:$PATH"
 ```
 
-2. Edit the `.env.sample` file in the root dir and supply all envs then change the file name from `.env.sample` -> `.env`
+4. Edit the `.env.sample` file in the root dir and supply all envs then change the file name from `.env.sample` -> `.env`
 
-## Usage
+> Note that in order to run k8s mode, you will need a master node and a slave node. You can tweak the script to include as many slave nodes as you want
 
-#### List all envs like docker image version, server IP and container name etc.
+## Available scripts
 
-```sh
-listEnv
-```
 
-#### Start a configurator
+### Run 🚀
+
+Start a configurator 
 
 ```sh
 runOhara
 ```
 
-There are three different configurator mode that we can use when starting with the script (defaults to K8s mode):
+There are three different configurator modes that we can use when starting with the script (defaults to K8s mode):
 
-Start a fake mode configurator
+Start a fake mode configurator, this mode is often for end-to-end testing, the returned data from the endpoint are mock data
 
 ```sh
 runOhara fake
@@ -47,26 +53,39 @@ Start a k8s mode configurator
 runOhara k8s # or simply runOhara
 ```
 
-#### Remove all k8s pods and configurator container
+Recommended for production if you have k8s support, otherwise, use docker mode instead
+
+### Stop 💣
+
+Remove all k8s pods and configurator container 
 
 ```sh
 cleanup
 ```
 
-#### Rebuild local ohara repo's jars
+### Utilities 🛠
+
+Rebuild local Ohara repo's jars
 
 ```sh
 updateJars
 ```
 
-#### Update Local ohara with Git
+Update Local Ohara repo via Git
 
 ```sh
 updateBranch
 ```
 
-#### Update Remote master and slave docker images
+Update Remote master and slave Docker images
 
 ```sh
 updateImages
+```
+
+
+List all envs like Docker image version, remote server IP and container name etc.
+
+```sh
+listEnv
 ```
